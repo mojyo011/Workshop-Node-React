@@ -1,8 +1,22 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import { singOut } from '../services/auth-service'
 
-class Navbar extends Component {
+export default class Navbar extends Component {
+
+    //iniciando o signOut em falso
+    constructor(){
+        super()
+        this.state = {
+            singOut: false
+        }
+    }
+
     render() {
+        //testando se for verdadeiro, se for true volta para a pagina de login, por isso iniciamos em false
+        if(this.state.signOut){
+            return <Redirect to='login'/>
+        }
         return(
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
                 <Link className="navbar-brand" to="#">SERIES</Link>
@@ -13,7 +27,7 @@ class Navbar extends Component {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav mr-auto">
                         <li className="nav-item active">
-                            <Link className="nav-link" to="/home">Home <span className="sr-only">(current)</span></Link>
+                            <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link>
                         </li>
                         <li className="nav-item">
                             <Link className="nav-link" to="/series">Series</Link>
@@ -23,8 +37,16 @@ class Navbar extends Component {
                         </li>
                     </ul>
                     <form className="form-inline my-2 my-lg-0">
-                    <input className="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search"/>
-                    <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+                    <button className="btn btn-outline-danger my-2 my-sm-0" 
+                    // tirando do local history
+                        onClick={() =>{
+                            //faz o logout
+                            singOut()
+                            this.setState({signOut: true})
+                        }}
+                        type="submit">
+                        Sair
+                    </button>
                     </form>
                 </div>
             </nav>
@@ -32,4 +54,4 @@ class Navbar extends Component {
     }
 }
 
-export default Navbar;
+// export default Navbar;

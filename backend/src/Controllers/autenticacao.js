@@ -9,7 +9,7 @@ const authConfig = require('../config/auth');
 
 gerarToken = (params) => {
     return jwt.sign(params, authConfig.secret, {
-        expiresIn: 60,
+        expiresIn: 50000000,
     })
 }
 
@@ -32,7 +32,7 @@ module.exports = {
 
             return res.status(201).send({
                 ...usuario,
-                token: gerarToken({id: usuario.id})
+                token: gerarToken({ id: usuario.id })
             })
         } catch(erro) {
             return res.status(500).send(erro)
@@ -43,12 +43,16 @@ module.exports = {
         const {email, senha} = req.body;
 
         try{
-            const usuario = await usuarioDao.buscarPorEmail(email);
+            let usuario = await usuarioDao.buscarPorEmail(email);
+
+            usuario = usuario[0]
 
             if(!usuario)
                 return res.status(400).send({erro: 'Usuario não cadastrado'});
-            if(!bcrypt.compare(senha, usuario.senha))
+            if(!await bcrypt.compare(senha, usuario.senha))
                 return res.status(400).send({erro: 'Senha inválida'})
+
+                delete usuario.senha
 
                 res.send({
                     usuario, 

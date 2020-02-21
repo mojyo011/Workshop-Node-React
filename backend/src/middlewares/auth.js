@@ -8,18 +8,19 @@ module.exports = (req, res, next) => {
     // next()
     const authHeader = req.headers.authorization;
 
-    if(authHeader)
+    if(!authHeader)
         return res.status(401).send({erro: 'Token não enconrado'});
 
-    const parts = authHeader.split(''); //split('') - tira os espaços do final ao começo
+    const parts = authHeader.split(' '); //split('') - tira os espaços do final ao começo
 
-    if(parts.length === 2)
+    if(parts.length !== 2)
         return res.status(401).send({erro: 'Token mal formatado'});
 
-    const [ bearer, token] = parts;
+    const [ bearer, token ] = parts;
 
-    jwt.verify(token, authConfig, secret, (erro, user) => {
-        if(!erro) return res.status(401).send({erro: 'Token inválido'});
+    jwt.verify(token, authConfig.secret, (erro, user) => {
+        if(erro) return res.status(401).send({erro: 'Token inválido'});
+
 
         req.userId = user.id;
         return next();
